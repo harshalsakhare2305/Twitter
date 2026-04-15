@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image";
 import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useState } from "react";
@@ -62,6 +63,8 @@ export default function Home() {
     setAuthToken(window.localStorage.getItem("Twitter_token"));
   }, []);
 
+  console.log(user);
+
   const handleLoginWithGoogle = useCallback(
     async (cred: CredentialResponse) => {
       const googleToken = cred.credential;
@@ -115,6 +118,36 @@ export default function Home() {
         </div>
 
         <div className="col-span-5 border-r-[1px] border-l-[1px] border-gray-600 h-screen overflow-y-scroll">
+  
+
+         
+
+          <div>
+            <div className='border border-r-0 border-l-0  border-b-0 border-gray-600 p-5 hover:bg-slate-900 transition-all cursor-pointer'>
+          <div className='grid grid-cols-12 gap-3'>
+
+               <div className="col-span-1">
+                      {
+
+                        user?.profileImageURL && (<Image src={user?.profileImageURL} alt='user-image'
+                        height={50} width={50} className="rounded-full " />)
+                      }
+                </div>
+               
+               <div className="col-span-11">
+                  <textarea placeholder="What's happening ?" className="w-full bg-transparent text-xl px-3 border-b border-slate-700 " rows={4}></textarea>
+               </div>
+               
+
+              
+
+          </div>
+            
+            
+          </div>
+          </div>
+
+
           <FeedCard />
           <FeedCard />
           <FeedCard />
