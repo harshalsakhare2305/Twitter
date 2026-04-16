@@ -12,6 +12,7 @@ import { graphqlclient } from "../../graphql-clients/api";
 import { verifyUserGoogleTokenQuery } from "../../graphql/queries/user";
 import { useCurrentUser } from "../../hooks/user";
 import FeedCard from "./components/FeedCard/index";
+import { useGetAllTweets } from "../../hooks/tweet";
 
 interface TwitterSidebarButton {
   title: string;
@@ -57,6 +58,10 @@ export default function Home() {
   const queryClient = useQueryClient();
   const [authToken, setAuthToken] = useState<string | null>(null);
   const query = useCurrentUser(authToken);
+  const TweetQuery =useGetAllTweets(authToken);
+  console.log("TweetQuery",TweetQuery);
+  const tweets =TweetQuery.data?.getAllTweets;
+  
   const user = query.data?.getCurrentUser;
 
   useEffect(() => {
@@ -164,13 +169,10 @@ export default function Home() {
           </div>
 
 
-          <FeedCard />
-          <FeedCard />
-          <FeedCard />
-          <FeedCard />
-          <FeedCard />
-          <FeedCard />
-          <FeedCard />
+             {
+              tweets?.map((tweet: any) => tweet ?<FeedCard key={tweet?.id} data={tweet} />: null)
+             }
+         
         </div>
 
         <div className="col-span-4 p-5">
