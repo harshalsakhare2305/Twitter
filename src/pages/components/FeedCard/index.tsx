@@ -19,7 +19,7 @@ function FeedCard({ data }: FeedCardProps) {
         <div className="col-span-1">
           {
             data?.author?.profileImageURL && (<Image src={data?.author?.profileImageURL} alt='userAvatar'
-            height={50} width={50} />)
+            height={50} width={50} className='rounded-full ' />)
           }
         </div>
         <div className="col-span-11">

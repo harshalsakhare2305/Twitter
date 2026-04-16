@@ -12,7 +12,7 @@ import { graphqlclient } from "../../graphql-clients/api";
 import { verifyUserGoogleTokenQuery } from "../../graphql/queries/user";
 import { useCurrentUser } from "../../hooks/user";
 import FeedCard from "./components/FeedCard/index";
-import { useGetAllTweets } from "../../hooks/tweet";
+import { useCreateTweet, useGetAllTweets } from "../../hooks/tweet";
 
 interface TwitterSidebarButton {
   title: string;
@@ -58,9 +58,14 @@ export default function Home() {
   const queryClient = useQueryClient();
   const [authToken, setAuthToken] = useState<string | null>(null);
   const query = useCurrentUser(authToken);
+
   const TweetQuery =useGetAllTweets(authToken);
   console.log("TweetQuery",TweetQuery);
   const tweets =TweetQuery.data?.getAllTweets;
+
+  const {mutate} =useCreateTweet();
+
+  const [content,SetContent] =useState("");
   
   const user = query.data?.getCurrentUser;
 
@@ -102,6 +107,12 @@ export default function Home() {
     },
     [queryClient]
   );
+
+  const handleCreateTweet =useCallback(()=>{
+     mutate({
+      content
+     })
+  },[content,mutate])
 
   return (
     <div>
@@ -148,11 +159,13 @@ export default function Home() {
                 </div>
 
                 <div className="col-span-11">
-                  <textarea placeholder="What's happening ? " className="w-full bg-transparent text-xl px-3 border-b border-slate-700 " rows={3}></textarea>
+                  <textarea value={content} 
+                  onChange={e=>SetContent(e.target.value)}
+                  placeholder="What's happening ? " className="w-full bg-transparent text-xl px-3 border-b border-slate-700 " rows={3}></textarea>
 
                   <div className="mt-2 flex justify-between items-center">
                     <BiImageAlt onClick={handleSelectImage} className="text-xl" />
-                    <button className="bg-[#1d9bf0] rounded-full font-semibold text-sm  px-4 py-2">
+                    <button onClick={handleCreateTweet} className="bg-[#1d9bf0] rounded-full font-semibold text-sm  px-4 py-2">
                       Tweet
                     </button>
                   </div>
