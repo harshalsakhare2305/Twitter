@@ -10,7 +10,6 @@ export const graphqlclient = new GraphQLClient("http://localhost:4000/graphql", 
 // A separate SSR-safe client factory:
 export const getServerSideClient = (token?: string) =>{
     
-  console.log("Token From GraphQL serverside client",token);
 
    return new GraphQLClient("http://localhost:4000/graphql", {
     headers: {

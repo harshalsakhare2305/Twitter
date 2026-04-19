@@ -16,7 +16,8 @@ import { useCreateTweet, useGetAllTweets } from "../../hooks/tweet";
 import TwitterLayout from "./components/layouts/TwitterLayout";
 import { GetServerSideProps, NextPage } from "next";
 import { Tweet } from "../../gql/graphql";
-import { getAllTweetsQuery } from "../../graphql/queries/tweet";
+import { getAllTweetsQuery, getSignedURLTweetQuery } from "../../graphql/queries/tweet";
+import axios from "axios";
 
 interface TwitterSidebarButton {
   title: string;
@@ -71,6 +72,8 @@ const Home:NextPage<ServerProps>=(props)=>
 {
   const queryClient = useQueryClient();
   const [authToken, setAuthToken] = useState<string | null>(null);
+
+   const [ImageURL, SetImageURL] = useState("");
   const query = useCurrentUser();
 
   
@@ -88,14 +91,48 @@ const Home:NextPage<ServerProps>=(props)=>
     setAuthToken(window.localStorage.getItem("Twitter_token"));
   }, []);
 
+  const handleInputChangeFile=useCallback((input:HTMLInputElement)=>{
+   return async(event:Event)=>{
+     event.preventDefault();
+     const file:File | null | undefined=input.files?.item(0);
+
+     if(!file)return ;
+
+     const {getSignedURLForTweet} = await graphqlclient.request(getSignedURLTweetQuery,{
+      imagename:file.name,
+      imageType:file.type
+     });
+
+     if(getSignedURLForTweet){
+         toast.loading("Uploading...",{id:"2"});
+        await axios.put(getSignedURLForTweet,file,{
+          headers:{
+            'Content-Type':file.type
+          }
+        });
+        toast.success("Upload Completed",{id:"2"});
+
+        const url =new URL(getSignedURLForTweet);
+        const myFile =`${url.origin}${url.pathname}`
+        SetImageURL(myFile);
+
+     }
+
+
+   }
+  },[])
+
 
   const handleSelectImage = useCallback(()=>{
       const input =document.createElement('input');
     
       input.setAttribute('type','file');
       input.setAttribute('accept','image/*');
+       const handlerFn =handleInputChangeFile(input);
+      input.addEventListener('change',handlerFn);
+
       input.click();
-  },[])
+  },[handleInputChangeFile])
  
 
 
@@ -125,6 +162,11 @@ const Home:NextPage<ServerProps>=(props)=>
                   <textarea value={content} 
                   onChange={e=>SetContent(e.target.value)}
                   placeholder="What's happening ? " className="w-full bg-transparent text-xl px-3 border-b border-slate-700 " rows={3}></textarea>
+
+                  {
+                    ImageURL && (<Image alt="tweet_image" src={ImageURL}
+                    width={300} height={300}/>)
+                  }
 
                   <div className="mt-2 flex justify-between items-center">
                     <BiImageAlt onClick={handleSelectImage} className="text-xl" />
