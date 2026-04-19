@@ -105,7 +105,7 @@ const TwitterLayout: React.FC<TwitterLayoutProps> = (props) => {
 
       if (verifyGoogleToken) {
         window.localStorage.setItem("Twitter_token", verifyGoogleToken);
-        document.cookie = `Twitter_token=${verifyGoogleToken}; path=/; SameSite=Lax`;
+        document.cookie =`Twitter_token=${verifyGoogleToken}; path=/; SameSite=Lax`;
         setAuthToken(verifyGoogleToken);
         await queryClient.invalidateQueries({ queryKey: ["current-user"] });
         toast.success("Verified Success");

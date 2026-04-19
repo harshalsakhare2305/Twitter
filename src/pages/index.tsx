@@ -8,17 +8,27 @@ import toast from "react-hot-toast";
 import { BiHash, BiHomeCircle, BiImageAlt, BiMoney, BiUser } from "react-icons/bi";
 import { BsBell, BsBookmark, BsEnvelope, BsTwitter } from "react-icons/bs";
 import { SlOptions } from "react-icons/sl";
-import { graphqlclient } from "../../graphql-clients/api";
+import { getServerSideClient, graphqlclient } from "../../graphql-clients/api";
 import { verifyUserGoogleTokenQuery } from "../../graphql/queries/user";
 import { useCurrentUser } from "../../hooks/user";
 import FeedCard from "./components/FeedCard/index";
 import { useCreateTweet, useGetAllTweets } from "../../hooks/tweet";
 import TwitterLayout from "./components/layouts/TwitterLayout";
+import { GetServerSideProps, NextPage } from "next";
+import { Tweet } from "../../gql/graphql";
+import { getAllTweetsQuery } from "../../graphql/queries/tweet";
 
 interface TwitterSidebarButton {
   title: string;
   icon: React.ReactNode;
 }
+
+interface ServerProps{
+  tweets: Tweet[];
+  message:string;
+}
+
+
 
 const sidebarMenuItems: TwitterSidebarButton[] = [
   {
@@ -55,13 +65,18 @@ const sidebarMenuItems: TwitterSidebarButton[] = [
   },
 ];
 
-export default function Home() {
+
+
+const Home:NextPage<ServerProps>=(props)=>
+{
   const queryClient = useQueryClient();
   const [authToken, setAuthToken] = useState<string | null>(null);
   const query = useCurrentUser();
 
-  const TweetQuery =useGetAllTweets(authToken);
-  const tweets =TweetQuery.data?.getAllTweets;
+  
+
+  // const TweetQuery =useGetAllTweets(authToken);
+  const tweets =props.tweets;
 
   const {mutate} =useCreateTweet();
 
@@ -135,4 +150,27 @@ export default function Home() {
              }
    </TwitterLayout>
   );
-}
+};
+
+export const getServerSideProps: GetServerSideProps<ServerProps> = async (context) => {
+ const token = context.req.cookies["Twitter_token"];
+
+ if(!token){
+  return { notFound: true };
+ }
+
+  const client = getServerSideClient(token);
+  const data = await client.request(getAllTweetsQuery);
+
+  if (!data) return { notFound: true };
+
+  return {
+    props: {
+      tweets: data.getAllTweets as Tweet[],
+      message: "Success all tweets Fetched"
+    },
+  };
+};
+
+
+export default Home;

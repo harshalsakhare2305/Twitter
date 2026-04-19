@@ -14,11 +14,11 @@ interface ServerProps{
     user?:User;
 }
 const UserProfilePage:NextPage<ServerProps>=(props)=>{
-    const query = useCurrentUser();
-    const user =query.data?.getCurrentUser;
+
     const router =useRouter();
 
-    console.log(props);
+    const user =props.user;
+
 
     return (
         <div>
@@ -31,13 +31,13 @@ const UserProfilePage:NextPage<ServerProps>=(props)=>{
                         <BsArrowLeftShort className="text-4xl"/>
                    <div>
                      <h1 className="text-xl font-bold">{user? `${user.firstName} ${user.lastName?user.lastName:""}`:"Unknown User"}</h1>
-                    <h1 className="text-md font-bold text-slate-500">100 Tweets</h1>
+                    <h1 className="text-md font-bold text-slate-500">{user?.tweets?.length} Tweets</h1>
                    </div>
                     </nav>
 
                     <div className="p-4 border-b border-slate-800">
                      {
-                        user && user?.profileImageURL && (
+                        user && user.profileImageURL && (
                              <Image  className="rounded-full" src={user?.profileImageURL} alt="user-image" width={100} height={100} />
                         )
                      }
