@@ -3,7 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { graphqlclient } from "../graphql-clients/api";
 import { getCurrentUserQuery } from "../graphql/queries/user";
-
+import { getUserById } from "../graphql/queries/user";
 export const useCurrentUser = () => {
   return useQuery({
     queryKey: ["current-user"],
@@ -11,3 +11,8 @@ export const useCurrentUser = () => {
     queryFn: () => graphqlclient.request(getCurrentUserQuery),
   });
 };
+
+
+// export const useGetUserById=(id:string)=>{
+//   return 
+// }

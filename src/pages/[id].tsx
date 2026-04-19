@@ -1,18 +1,25 @@
 import {useRouter} from 'next/router'
-import type { NextPage } from "next";
+import type { GetServerSideProps, NextPage } from "next";
 import TwitterLayout from "./components/layouts/TwitterLayout";
 import { BsArrowLeftShort } from "react-icons/bs";
 import Image from "next/image";
 import { useCurrentUser } from "../../hooks/user";
 import FeedCard from "./components/FeedCard";
-import { Tweet } from "../../gql/graphql";
-const UserProfilePage:NextPage=()=>{
+import { Tweet, User } from "../../gql/graphql";
+import { getServerSideClient, graphqlclient } from '../../graphql-clients/api';
+import { getUserById } from '../../graphql/queries/user';
+
+
+interface ServerProps{
+    user?:User;
+}
+const UserProfilePage:NextPage<ServerProps>=(props)=>{
     const query = useCurrentUser();
     const user =query.data?.getCurrentUser;
     const router =useRouter();
 
+    console.log(props);
 
-    console.log("Router Query",router.query);
     return (
         <div>
            
@@ -48,7 +55,26 @@ const UserProfilePage:NextPage=()=>{
                 </TwitterLayout>
 
         </div>
-    )
-}
+    );
+};
+
+export const getServerSideProps: GetServerSideProps<ServerProps> = async (context) => {
+  const id = context.query.id as string | undefined;
+  if (!id) return { notFound: true, props: { user: undefined } };
+
+  // Read token from cookies
+  const token = context.req.cookies["Twitter_token"];
+
+  const client = getServerSideClient(token);
+  const userInfo = await client.request(getUserById, { id });
+
+  if (!userInfo?.getUserById) return { notFound: true };
+
+  return {
+    props: {
+      user: userInfo.getUserById as User,  // <-- also fix: was "userInfo" not "user"
+    },
+  };
+};
 
 export default UserProfilePage

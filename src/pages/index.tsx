@@ -61,7 +61,6 @@ export default function Home() {
   const query = useCurrentUser();
 
   const TweetQuery =useGetAllTweets(authToken);
-  console.log("TweetQuery",TweetQuery);
   const tweets =TweetQuery.data?.getAllTweets;
 
   const {mutate} =useCreateTweet();

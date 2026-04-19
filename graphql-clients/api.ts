@@ -7,3 +7,10 @@ export const graphqlclient = new GraphQLClient("http://localhost:4000/graphql", 
   }),
 });
 
+// A separate SSR-safe client factory:
+export const getServerSideClient = (token?: string) =>
+  new GraphQLClient("http://localhost:4000/graphql", {
+    headers: {
+      Authorization: `Bearer ${token ?? ""}`,
+    },
+  });
