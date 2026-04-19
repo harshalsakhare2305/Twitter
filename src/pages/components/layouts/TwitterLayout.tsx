@@ -1,5 +1,5 @@
 import { CredentialResponse, GoogleLogin } from '@react-oauth/google';
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { BiHash, BiHomeCircle, BiImageAlt, BiMoney, BiUser } from 'react-icons/bi';
 import { BsBell, BsBookmark, BsEnvelope, BsTwitter } from 'react-icons/bs';
 import { SlOptions } from 'react-icons/sl';
@@ -11,6 +11,7 @@ import toast from 'react-hot-toast';
 import { graphqlclient } from '../../../../graphql-clients/api';
 import { verifyUserGoogleTokenQuery } from '../../../../graphql/queries/user';
 import Image from 'next/image';
+import Link from 'next/link';
 
 
 interface TwitterLayoutProps{
@@ -20,56 +21,71 @@ interface TwitterLayoutProps{
 interface TwitterSidebarButton {
   title: string;
   icon: React.ReactNode;
+  link: string;
 }
 
-const sidebarMenuItems: TwitterSidebarButton[] = [
-  {
-    title: "Home",
-    icon: <BiHomeCircle />,
-  },
-  {
-    title: "Explore",
-    icon: <BiHash />,
-  },
-  {
-    title: "Notifications",
-    icon: <BsBell />,
-  },
-  {
-    title: "Messages",
-    icon: <BsEnvelope />,
-  },
-  {
-    title: "Bookmarks",
-    icon: <BsBookmark />,
-  },
-  {
-    title: "Twitter Blue",
-    icon: <BiMoney />,
-  },
-  {
-    title: "Profile",
-    icon: <BiUser />,
-  },
-  {
-    title: "More",
-    icon: <SlOptions />,
-  },
-];
+
 
 
 
 
 const TwitterLayout: React.FC<TwitterLayoutProps> = (props) => {
+
+ 
   const queryClient = useQueryClient();
   const [authToken, setAuthToken] = useState<string | null>(null);
-  const query = useCurrentUser(authToken);
+  const query = useCurrentUser();
 
   const user = query.data?.getCurrentUser;
 
   useEffect(() => {
     setAuthToken(window.localStorage.getItem("Twitter_token"));
   }, []);
+
+
+   const sidebarMenuItems:TwitterSidebarButton[] = useMemo(()=> [
+  {
+    title: "Home",
+    icon: <BiHomeCircle />,
+    link:'/'
+  },
+  {
+    title: "Explore",
+    icon: <BiHash />,
+     link:'/',
+  },
+  {
+    title: "Notifications",
+    icon: <BsBell />,
+     link:'/',
+  },
+  {
+    title: "Messages",
+    icon: <BsEnvelope />,
+     link:'/',
+  },
+  {
+    title: "Bookmarks",
+    icon: <BsBookmark />,
+     link:'/',
+  },
+  {
+    title: "Twitter Blue",
+    icon: <BiMoney />,
+     link:'/',
+  },
+  {
+    title: "Profile",
+    icon: <BiUser />,
+     link: `/${user?.id}`,
+  },
+  {
+    title: "More",
+    icon: <SlOptions />,
+     link:'/',
+  },
+]
+    ,[user?.id])
 
 
     const handleLoginWithGoogle = useCallback(
@@ -111,12 +127,13 @@ const TwitterLayout: React.FC<TwitterLayoutProps> = (props) => {
               <ul>
                 {sidebarMenuItems.map((item) => (
                   <li
-                    className="flex justify-start items-center gap-4 hover:bg-gray-800 rounded-2xl px-3 py-2 w-fit cursor-pointer mt-2"
                     key={item.title}
                   >
+                   <Link  className="flex justify-start items-center gap-4 hover:bg-gray-800 rounded-2xl px-3 py-2 w-fit cursor-pointer mt-2" href={item.link}>
                     <span className="text-3xl">{item.icon}</span>
                     {/* hidden on mobile, abbreviated on md, full on sm (desktop) */}
                     <span className="hidden md:inline sm:inline">{item.title}</span>
+                   </Link>
                   </li>
                 ))}
               </ul>
