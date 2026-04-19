@@ -58,7 +58,7 @@ const sidebarMenuItems: TwitterSidebarButton[] = [
 export default function Home() {
   const queryClient = useQueryClient();
   const [authToken, setAuthToken] = useState<string | null>(null);
-  const query = useCurrentUser(authToken);
+  const query = useCurrentUser();
 
   const TweetQuery =useGetAllTweets(authToken);
   console.log("TweetQuery",TweetQuery);

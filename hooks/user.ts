@@ -4,10 +4,10 @@ import { useQuery } from "@tanstack/react-query";
 import { graphqlclient } from "../graphql-clients/api";
 import { getCurrentUserQuery } from "../graphql/queries/user";
 
-export const useCurrentUser = (token: string | null) => {
+export const useCurrentUser = () => {
   return useQuery({
-    queryKey: ["current-user", token],
-    enabled: Boolean(token),
+    queryKey: ["current-user"],
+    enabled: true,
     queryFn: () => graphqlclient.request(getCurrentUserQuery),
   });
 };
