@@ -78,8 +78,15 @@ const Home:NextPage<ServerProps>=(props)=>
 
   
 
-  // const TweetQuery =useGetAllTweets(authToken);
-  const tweets =props.tweets;
+  const TweetQuery =useGetAllTweets(authToken);
+
+  const [tweets, setTweets] = useState<Tweet[]>(props.tweets as Tweet[])
+  
+   
+  useEffect(()=>{
+     setTweets(TweetQuery.data?.getAllTweets);
+
+  },[TweetQuery]);
 
   const {mutate} =useCreateTweet();
 
@@ -138,10 +145,13 @@ const Home:NextPage<ServerProps>=(props)=>
 
 
   const handleCreateTweet =useCallback(()=>{
-     mutate({
+      mutate({
       content,
       imageURL,
      })
+
+     SetContent("");
+     SetimageURL("");
   },[content,mutate,imageURL])
 
   return (
@@ -217,3 +227,7 @@ export const getServerSideProps: GetServerSideProps<ServerProps> = async (contex
 
 
 export default Home;
+
+function mutateAsync(arg0: { content: string; imageURL: string; }) {
+  throw new Error("Function not implemented.");
+}
