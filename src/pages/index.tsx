@@ -73,7 +73,7 @@ const Home:NextPage<ServerProps>=(props)=>
   const queryClient = useQueryClient();
   const [authToken, setAuthToken] = useState<string | null>(null);
 
-   const [ImageURL, SetImageURL] = useState("");
+   const [imageURL, SetimageURL] = useState("");
   const query = useCurrentUser();
 
   
@@ -114,7 +114,7 @@ const Home:NextPage<ServerProps>=(props)=>
 
         const url =new URL(getSignedURLForTweet);
         const myFile =`${url.origin}${url.pathname}`
-        SetImageURL(myFile);
+        SetimageURL(myFile);
 
      }
 
@@ -139,9 +139,10 @@ const Home:NextPage<ServerProps>=(props)=>
 
   const handleCreateTweet =useCallback(()=>{
      mutate({
-      content
+      content,
+      imageURL,
      })
-  },[content,mutate])
+  },[content,mutate,imageURL])
 
   return (
    < TwitterLayout>
@@ -164,8 +165,8 @@ const Home:NextPage<ServerProps>=(props)=>
                   placeholder="What's happening ? " className="w-full bg-transparent text-xl px-3 border-b border-slate-700 " rows={3}></textarea>
 
                   {
-                    ImageURL && (<Image alt="tweet_image" src={ImageURL}
-                    width={300} height={300}/>)
+                    imageURL && (<Image alt="tweet_image" src={imageURL}
+                    width={300} height={300} unoptimized />)
                   }
 
                   <div className="mt-2 flex justify-between items-center">
@@ -197,9 +198,9 @@ const Home:NextPage<ServerProps>=(props)=>
 export const getServerSideProps: GetServerSideProps<ServerProps> = async (context) => {
  const token = context.req.cookies["Twitter_token"];
 
- if(!token){
-  return { notFound: true };
- }
+//  if(!token){
+//   return { notFound: true };
+//  }
 
   const client = getServerSideClient(token);
   const data = await client.request(getAllTweetsQuery);

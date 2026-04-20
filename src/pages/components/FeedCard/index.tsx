@@ -28,8 +28,11 @@ function FeedCard({ data }: FeedCardProps) {
           <Link href={`/${data.author?.id}`}>
            <h5>{data?.author?.firstName} {data?.author?.lastName}</h5>
           </Link>
-
+  
           <p>{data?.content}</p>
+          {
+            data?.imageURL && (<Image src={data.imageURL} alt='tweet-image' height={400} width={400} unoptimized/>)
+          }
 
            <div className='flex justify-between items-center mt-5 text-xl p-2 w-[90%]'>
           <div>
