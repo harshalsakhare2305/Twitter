@@ -28,6 +28,20 @@ export const getCurrentUserQuery = graphql(`#graphql
 
       
     }
+
+     followers {
+      id
+      firstName
+      lastName
+      profileImageURL
+    }
+    
+    following {
+      id
+      firstName
+      lastName
+      profileImageURL
+    }
     }
   }
 `);

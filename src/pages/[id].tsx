@@ -8,7 +8,9 @@ import FeedCard from "./components/FeedCard";
 import { Tweet, User } from "../../gql/graphql";
 import { getServerSideClient, graphqlclient } from '../../graphql-clients/api';
 import { getUserById } from '../../graphql/queries/user';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
+import { followUserMutation, UnfollowUserMutation } from '../../graphql/mutations/user';
+import { useQueryClient } from '@tanstack/react-query';
 
 
 interface ServerProps{
@@ -18,21 +20,44 @@ const UserProfilePage:NextPage<ServerProps>=(props)=>{
 
     const router =useRouter();
 
+    const queryClient = useQueryClient();
+
     const query =useCurrentUser();
     const currentUser =query.data?.getCurrentUser;
 
     const user =props.user;
 
-   const AmiFollowing = useMemo(() => {
-  if (!user || !user.followers || !currentUser?.id) {
-    return false;
-  }
+const AmiFollowing = useMemo(() => {
+  if (!currentUser?.following || !user?.id) return false;
+
+  return currentUser.following.some(
+    (el) => el?.id === user.id
+  );
+}, [currentUser?.following, user?.id]);
+
 
  
+   const handleFollow=useCallback(async ()=>{
 
-  return user.followers.some(el => el?.id === currentUser.id);
-}, [currentUser?.id, user]);
+    if(!props?.user?.id|| !props?.user?.id)return;
+        await graphqlclient.request(followUserMutation,{
+          to:props?.user?.id
+        });
 
+        await queryClient.invalidateQueries({queryKey:["current-user"]});
+      
+   },[props?.user?.id,queryClient]);
+
+
+   const handleUnfollow=useCallback(async()=>{
+          if(!props?.user?.id || !props?.user?.id)return;
+        await graphqlclient.request(UnfollowUserMutation,{
+          to:props?.user?.id
+        });
+
+        await queryClient.invalidateQueries({queryKey:["current-user"]});
+      
+   },[props?.user?.id,queryClient]);
 
     
   
@@ -73,7 +98,7 @@ const UserProfilePage:NextPage<ServerProps>=(props)=>{
                     {
                       <>
                       {
-                        AmiFollowing ? ((user?.id !==currentUser?.id) && ( <button className='bg-white text-black px-3 py-1 rounded-full text-sm'>Unfollow</button>)):((user?.id !==currentUser?.id) && ( <button className='bg-white text-black px-3 py-1 rounded-full text-sm'>Follow</button>))
+                        AmiFollowing ? ((user?.id !==currentUser?.id) && ( <button className='bg-white text-black px-3 py-1 rounded-full text-sm' onClick={handleUnfollow}>Unfollow</button>)):((user?.id !==currentUser?.id) && ( <button className='bg-white text-black px-3 py-1 rounded-full text-sm' onClick={handleFollow}>Follow</button>))
                       }
                       </>
                     }
