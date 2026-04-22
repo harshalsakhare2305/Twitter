@@ -14,8 +14,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 
-interface TwitterLayoutProps{
-    children:React.ReactNode;
+interface TwitterLayoutProps {
+  children: React.ReactNode;
 }
 
 interface TwitterSidebarButton {
@@ -31,7 +31,7 @@ interface TwitterSidebarButton {
 
 const TwitterLayout: React.FC<TwitterLayoutProps> = (props) => {
 
- 
+
   const queryClient = useQueryClient();
   const [authToken, setAuthToken] = useState<string | null>(null);
   const query = useCurrentUser();
@@ -43,52 +43,52 @@ const TwitterLayout: React.FC<TwitterLayoutProps> = (props) => {
   }, []);
 
 
-   const sidebarMenuItems:TwitterSidebarButton[] = useMemo(()=> [
-  {
-    title: "Home",
-    icon: <BiHomeCircle />,
-    link:'/'
-  },
-  {
-    title: "Explore",
-    icon: <BiHash />,
-     link:'/',
-  },
-  {
-    title: "Notifications",
-    icon: <BsBell />,
-     link:'/',
-  },
-  {
-    title: "Messages",
-    icon: <BsEnvelope />,
-     link:'/',
-  },
-  {
-    title: "Bookmarks",
-    icon: <BsBookmark />,
-     link:'/',
-  },
-  {
-    title: "Twitter Blue",
-    icon: <BiMoney />,
-     link:'/',
-  },
-  {
-    title: "Profile",
-    icon: <BiUser />,
-     link: `/${user?.id}`,
-  },
-  {
-    title: "More",
-    icon: <SlOptions />,
-     link:'/',
-  },
-]
-    ,[user?.id])
+  const sidebarMenuItems: TwitterSidebarButton[] = useMemo(() => [
+    {
+      title: "Home",
+      icon: <BiHomeCircle />,
+      link: '/'
+    },
+    {
+      title: "Explore",
+      icon: <BiHash />,
+      link: '/',
+    },
+    {
+      title: "Notifications",
+      icon: <BsBell />,
+      link: '/',
+    },
+    {
+      title: "Messages",
+      icon: <BsEnvelope />,
+      link: '/',
+    },
+    {
+      title: "Bookmarks",
+      icon: <BsBookmark />,
+      link: '/',
+    },
+    {
+      title: "Twitter Blue",
+      icon: <BiMoney />,
+      link: '/',
+    },
+    {
+      title: "Profile",
+      icon: <BiUser />,
+      link: `/${user?.id}`,
+    },
+    {
+      title: "More",
+      icon: <SlOptions />,
+      link: '/',
+    },
+  ]
+    , [user?.id])
 
 
-    const handleLoginWithGoogle = useCallback(
+  const handleLoginWithGoogle = useCallback(
     async (cred: CredentialResponse) => {
       const googleToken = cred.credential;
       if (!googleToken) {
@@ -105,7 +105,7 @@ const TwitterLayout: React.FC<TwitterLayoutProps> = (props) => {
 
       if (verifyGoogleToken) {
         window.localStorage.setItem("Twitter_token", verifyGoogleToken);
-document.cookie = `Twitter_token=${verifyGoogleToken}; path=/; max-age=1296000; SameSite=Lax`;
+        document.cookie = `Twitter_token=${verifyGoogleToken}; path=/; max-age=1296000; SameSite=Lax`;
         setAuthToken(verifyGoogleToken);
         await queryClient.invalidateQueries({ queryKey: ["current-user"] });
         toast.success("Verified Success");
@@ -115,7 +115,7 @@ document.cookie = `Twitter_token=${verifyGoogleToken}; path=/; max-age=1296000; 
   );
   return (
     <div>
-      <div className="grid grid-cols-12 h-screen w-screen sm:px-56">
+      <div className="grid grid-cols-15 h-screen w-screen sm:px-56">
 
         {/* Sidebar — col-span goes 2 → 3 → 3 across sm/md/lg */}
         <div className="col-span-2 md:col-span-3 sm:col-span-3 pt-8 flex md:justify-end sm:justify-end pr-4 md:px-4 sm:px-4 relative">
@@ -130,11 +130,11 @@ document.cookie = `Twitter_token=${verifyGoogleToken}; path=/; max-age=1296000; 
                   <li
                     key={item.title}
                   >
-                   <Link  className="flex justify-start items-center gap-4 hover:bg-gray-800 rounded-2xl px-3 py-2 w-fit cursor-pointer mt-2" href={item.link}>
-                    <span className="text-3xl">{item.icon}</span>
-                    {/* hidden on mobile, abbreviated on md, full on sm (desktop) */}
-                    <span className="hidden md:inline sm:inline">{item.title}</span>
-                   </Link>
+                    <Link className="flex justify-start items-center gap-4 hover:bg-gray-800 rounded-2xl px-3 py-2 w-fit cursor-pointer mt-2" href={item.link}>
+                      <span className="text-3xl">{item.icon}</span>
+                      {/* hidden on mobile, abbreviated on md, full on sm (desktop) */}
+                      <span className="hidden md:inline sm:inline">{item.title}</span>
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -178,17 +178,73 @@ document.cookie = `Twitter_token=${verifyGoogleToken}; path=/; max-age=1296000; 
         </div>
 
         {/* Right panel — hidden on mobile, visible from md up */}
-        <div className="hidden md:block md:col-span-2 sm:col-span-3 p-3">
-  {!user && (
-    <div className="p-3 bg-slate-700 rounded-lg">
-      <h1 className="my-2 text-lg md:text-xl">New To Twitter?</h1>
-      <GoogleLogin
-        onSuccess={(credentialResponse) => handleLoginWithGoogle(credentialResponse)}
-        onError={() => console.log("Login Failed")}
-      />
+        <div className="hidden md:block md:col-span-5 sm:col-span-5 p-3">
+          {!user ? (
+            <div className="p-3 bg-slate-700 rounded-lg">
+              <h1 className="my-2 text-lg md:text-xl">New To Twitter?</h1>
+              <GoogleLogin
+                onSuccess={(credentialResponse) => handleLoginWithGoogle(credentialResponse)}
+                onError={() => console.log("Login Failed")}
+              />
+            </div>
+          ) :
+            // (<div className='px-4 py-3 bg-slate-800 rounded-lg' >
+
+            //   <h1 className="my-2 text-lg md:text-xl">Users you may know</h1>
+            //   {(user && user?.recommendedUsers?.map(el =>
+            //     <div key={el?.id} className='flex items-center gap-3 mt-3'>
+            //       {el?.profileImageURL && <Image alt='recommended_user' src={el?.profileImageURL} width={40} height={40} className='rounded-full' />}
+            //       <div>
+                  
+            //       <div>{el?.firstName} {el?.lastName}</div>
+            //       <button className='bg-white text-black text-sm rounded-lg px-3 w-full py-1'>Follow</button>
+
+            //       </div>
+            //       </div>
+            //   ))}
+
+            // </div>)
+
+            (<div className="px-4 py-3 bg-slate-800 rounded-lg">
+  <h1 className="my-2 text-lg md:text-xl">Users you may know</h1>
+
+  {user?.recommendedUsers?.map((el) => (
+    <div
+      key={el?.id}
+      className="flex items-center justify-between mt-4"
+    >
+      {/* LEFT SIDE */}
+     <div className="flex items-center gap-3">
+        {el?.profileImageURL && (
+          <Image
+            alt="recommended_user"
+            src={el.profileImageURL}
+            width={40}
+            height={40}
+            className="rounded-full"
+          />
+        )}
+
+        <div className="flex flex-col">
+          <span className="font-semibold">
+            {el?.firstName} {el?.lastName}
+          </span>
+          <span className="text-gray-400 text-sm">
+            @{el?.firstName}{el?.lastName}
+          </span>
+        </div>
+      </div>
+
+      {/* RIGHT SIDE BUTTON */}
+     <Link href={`/${el?.id}`}> <button className="bg-white text-black text-sm rounded-full px-4 py-1 font-semibold">
+        View
+      </button></Link>
     </div>
-  )}
-</div>
+  ))}
+</div>)
+
+          }
+        </div>
 
 
       </div>

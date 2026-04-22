@@ -42,6 +42,13 @@ export const getCurrentUserQuery = graphql(`#graphql
       lastName
       profileImageURL
     }
+
+    recommendedUsers{
+     id
+     firstName
+     lastName
+     profileImageURL
+    }
     }
   }
 `);
@@ -77,6 +84,8 @@ export const getUserById =graphql(`#graphql
       lastName
       profileImageURL
     }
+
+    
   }
 }
   `)

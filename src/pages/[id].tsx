@@ -11,6 +11,7 @@ import { getUserById } from '../../graphql/queries/user';
 import { useCallback, useMemo } from 'react';
 import { followUserMutation, UnfollowUserMutation } from '../../graphql/mutations/user';
 import { useQueryClient } from '@tanstack/react-query';
+import Link from 'next/link';
 
 
 interface ServerProps{
@@ -71,7 +72,9 @@ const AmiFollowing = useMemo(() => {
                   <div>
                     <nav className="flex items-center gap-3 py-3 px-3 ">
 
+                       <Link href={`/`}>
                         <BsArrowLeftShort className="text-4xl"/>
+                       </Link>
                    <div>
                      <h1 className="text-xl font-bold">{user? `${user.firstName} ${user.lastName?user.lastName:""}`:"Unknown User"}</h1>
                     <h1 className="text-md font-bold text-slate-500">{user?.tweets?.length} Tweets</h1>
