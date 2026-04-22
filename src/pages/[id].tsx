@@ -8,6 +8,7 @@ import FeedCard from "./components/FeedCard";
 import { Tweet, User } from "../../gql/graphql";
 import { getServerSideClient, graphqlclient } from '../../graphql-clients/api';
 import { getUserById } from '../../graphql/queries/user';
+import { useMemo } from 'react';
 
 
 interface ServerProps{
@@ -17,7 +18,24 @@ const UserProfilePage:NextPage<ServerProps>=(props)=>{
 
     const router =useRouter();
 
+    const query =useCurrentUser();
+    const currentUser =query.data?.getCurrentUser;
+
     const user =props.user;
+
+   const AmiFollowing = useMemo(() => {
+  if (!user || !user.followers || !currentUser?.id) {
+    return false;
+  }
+
+ 
+
+  return user.followers.some(el => el?.id === currentUser.id);
+}, [currentUser?.id, user]);
+
+
+    
+  
 
 
     return (
@@ -42,6 +60,25 @@ const UserProfilePage:NextPage<ServerProps>=(props)=>{
                         )
                      }
                      <h1 className="text-xl font-bold mt-3">{user? `${user.firstName} ${user.lastName?user.lastName:""}`:"Unknown User"}</h1>
+
+                    <div className='flex justify-between items-center'>
+
+                       <div className='flex gap-4 mt-2 text-sm text-gray-400   '>
+                      <span>{
+                         user?.followers?.length
+                        } Followers</span>
+                      <span>{user?.following?.length} Following</span>
+                     </div>
+
+                    {
+                      <>
+                      {
+                        AmiFollowing ? ((user?.id !==currentUser?.id) && ( <button className='bg-white text-black px-3 py-1 rounded-full text-sm'>Unfollow</button>)):((user?.id !==currentUser?.id) && ( <button className='bg-white text-black px-3 py-1 rounded-full text-sm'>Follow</button>))
+                      }
+                      </>
+                    }
+
+                    </div>
                     </div>
 
                     <div>
